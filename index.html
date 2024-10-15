@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<style>
+::selection{
+  background: transparent;
+}
+body{
+  overflow: hidden;
+  background:#000;
+  background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url("https://cbx-prod.b-cdn.net/COLOURBOX57035077.jpg?width=800&height=800&quality=70");
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.els {
+  position: absolute;
+}
+.els2 {
+  position: absolute;
+}
+.els3 {
+  position: absolute;
+}
+</style>
+</head>
+<body>
+<p style="position:absolute;left:50%;top:20px;transform:translateX(-50%);color:yellow;font-size:2em;">SCORE: <span id="score">0</span></p>
+<script>
+let score = 0;
+let freezed = false;
+const freezeTime = 5; // This variable is currently not being used in the code
+let interv;
+let freezetimeInterv;
+
+function bombEl(){
+	let sec = Math.round(Math.random() * 10) + 5;
+    let msecs = sec * 1000;
+    setTimeout(() => {
+        if (!freezed) {
+            let randDim = Math.random() * 100;
+            let top = -20;
+            let left = 0;
+            if (randDim < 40) {
+                randDim += 50;
+            }
+            left = Math.random() * (window.innerWidth - randDim);
+            if (left < randDim) {
+               left += randDim;
+            }
+
+            document.body.insertAdjacentHTML('afterbegin', `
+            <div class="els3" style="width:${randDim}px;height:${randDim}px;left:${left}px;top:${top}px;overflow:hidden;">
+                <img src="bombcat.png" style="width:100%;height:100%;"/>
+            </div>
+            `);
+            
+            // Animate the new element
+            $(".els3").animate({
+                "top": (window.innerHeight + 200) + "px",
+            }, 5000);
+
+            $(".els3").on("touchstart", function(event) { //touchstart
+                event.stopImmediatePropagation();
+                $(this).remove();
+                score -= 10;
+                if (score < 0) {
+                  score = 0;
+                }
+                $("#score").html(score);
+            });
+
+            bombEl(); // Recursive call to create more elements
+        }
+    }, msecs);
+}
+bombEl();
+
+function freezeEl() {
+    let sec = Math.round(Math.random() * 10) + 5;
+    let msecs = sec * 1000;
+    setTimeout(() => {
+        if (!freezed) {
+            let randDim = Math.random() * 100;
+            let top = -20;
+            let left = 0;
+            if (randDim < 40) {
+                randDim += 50;
+            }
+            left = Math.random() * (window.innerWidth - randDim);
+			if (left < randDim) {
+               left += randDim;
+            }
+            document.body.insertAdjacentHTML('afterbegin', `
+            <div class="els2" style="width:${randDim}px;height:${randDim}px;left:${left}px;top:${top}px;overflow:hidden;">
+                <img src="freezingcat.png" style="width:100%;height:100%;"/>
+            `);
+            
+            // Animate the new element
+            $(".els2").animate({
+                "top": (window.innerHeight + 200) + "px",
+            }, 5000);
+
+            $(".els2").on("touchstart", function(event) { //touchstart
+                event.stopImmediatePropagation();
+                $(this).remove();
+                freezeElements(); // Stop all elements when one is touchstarted
+            });
+
+            freezeEl(); // Recursive call to create more elements
+        }
+    }, msecs);
+}
+freezeEl();
+
+function freezetime(){
+    let x = 0;
+	freezetimeInterv = setInterval(() => {
+       if (x < 5) {
+         x += 1;
+       } else {
+         unfreezeElements();
+       }
+    }, 1000);
+}
+
+function freezeElements() {
+    freezed = true;
+    freezetime();
+    $(".els, .els2, .els3").stop(true, false); // Stop all animations (do not clear the queue)
+}
+
+function unfreezeElements() {
+    freezed = false;
+    clearInterval(freezetimeInterv);
+    freezeEl();
+    bombEl();
+    $(".els, .els2, .els3").each(function () {
+        let top = parseFloat($(this).css("top")); // Get the current top position
+        let distance = window.innerHeight + 200 - top; // Calculate remaining distance to animate
+        let remainingTime = (distance / (window.innerHeight + 200)) * 5000; // Calculate remaining animation time
+
+        $(this).animate({
+            "top": (window.innerHeight + 200) + "px",
+        }, remainingTime); // Resume with remaining time
+    });
+}
+
+function startGame() {
+    interv = setInterval(() => {
+        if (!freezed) {
+            let randDim = Math.random() * 100;
+            let top = -20;
+            let left = 0;
+            if (randDim < 40) {
+                randDim += 50;
+            }
+
+            left = Math.random() * (window.innerWidth - randDim);
+            if (left < randDim) {
+               left += randDim;
+            }
+            document.body.insertAdjacentHTML('afterbegin', `
+            <div class="els" style="width:${randDim}px;height:${randDim}px;left:${left}px;top:${top}px;overflow:hidden;">
+                <img src="greencat.png" style="width:100%;height:100%;"/>
+            `);
+            
+            // Animate the new element
+            $(".els").animate({
+                "top": (window.innerHeight + 200) + "px",
+            }, 5000);
+
+            $(".els").on("touchstart", function(event) { //touchstart
+                event.stopImmediatePropagation();
+                $(this).remove();
+                score += 1;
+                $("#score").html(score);
+            });
+
+            // Clean up elements that have moved out of view
+            let els = document.querySelectorAll(".els");
+            for (let i = 0; i < els.length; i++) {
+                const topValue = parseFloat(els[i].style.top);
+                if (!isNaN(topValue) && topValue > window.innerHeight) {
+                    els[i].remove();
+                }
+            }
+        }
+        
+    }, 500);
+}
+
+startGame();
+</script>
+</body>
+</html> 
