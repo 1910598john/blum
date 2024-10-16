@@ -24,25 +24,70 @@ body{
 .els3 {
   position: absolute;
 }
+.sc{
+    position:absolute;
+    left:50%;
+    top:40px;
+    transform:translateX(-50%);
+    color:yellow;
+    font-size:1em;
+    transition: top 1s ease, left 1s ease, font-size 1s ease;
+}
+.move-center {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em;
+}
 </style>
 </head>
 <body>
-<p style="position:absolute;left:50%;top:20px;transform:translateX(-50%);color:yellow;font-size:1em;">SCORE: <span id="score">0</span></p>
+<p  style="position:absolute;left:50%;top:20px;transform:translateX(-50%);color:yellow;font-size:.8em;">Time:<span id="time">30</span></p>
+<p class="sc">SCORE: <span id="score">0</span></p>
 <script>
 let score = 0;
 let freezed = false;
 const freezeTime = 5; // This variable is currently not being used in the code
 let interv;
 let freezetimeInterv;
+let gtimeInterv;
+let time = 30;
+let bombinterv;
+let freezeinterv;
+
+function gameEnded() {
+    clearInterval(interv);
+    clearInterval(freezetimeInterv);
+    clearInterval(bombinterv);
+    clearInterval(freezeinterv);
+    $(".els, .els2, .els3").stop(true, false);
+    $(".els, .els2, .els3").remove();
+}
+
+function gameTime(){
+    gtimeInterv = setTimeout(() => {
+        time -= 1;
+        if (time > 0) {
+            $("#time").html(time);
+            gameTime();
+        } else {
+            $(".sc").addClass("move-center");
+            $("#time").html(time).parent("p").css("color", "red");
+            gameEnded();
+        }
+    }, 1000);
+}
+
+gameTime();
 
 function bombEl(){
 	let sec = Math.round(Math.random() * 10) + 5;
     let msecs = sec * 1000;
-    setTimeout(() => {
+    bombinterv = setTimeout(() => {
         if (!freezed) {
             $("body").css("background-image", "linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,0.9)), url('greencat.png')");
             let randDim = Math.random() * 70;
-            let top = -20;
+            let top = -100;
             let left = 0;
             if (randDim < 50) {
                 randDim += 20;
@@ -83,10 +128,10 @@ bombEl();
 function freezeEl() {
     let sec = Math.round(Math.random() * 10) + 5;
     let msecs = sec * 1000;
-    setTimeout(() => {
+    freezeinterv = setTimeout(() => {
         if (!freezed) {
             let randDim = Math.random() * 70;
-            let top = -20;
+            let top = -100;
             let left = 0;
             if (randDim < 50) {
                 randDim += 20;
@@ -133,6 +178,7 @@ function freezetime(){
 function freezeElements() {
     freezed = true;
     freezetime();
+    clearTimeout(gtimeInterv);
     $(".els, .els2, .els3").stop(true, false); // Stop all animations (do not clear the queue)
 }
 
@@ -142,6 +188,7 @@ function unfreezeElements() {
     $("body").css("background-image", "linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,0.9)), url('greencat.png')");
     freezeEl();
     bombEl();
+    gameTime();
     $(".els, .els2, .els3").each(function () {
         let top = parseFloat($(this).css("top")); // Get the current top position
         let distance = window.innerHeight + 200 - top; // Calculate remaining distance to animate
@@ -157,7 +204,7 @@ function startGame() {
     interv = setInterval(() => {
         if (!freezed) {
             let randDim = Math.random() * 70;
-            let top = -20;
+            let top = -100;
             let left = 0;
             if (randDim < 50) {
                 randDim += 20;
@@ -167,6 +214,7 @@ function startGame() {
             if (left < randDim) {
                left += randDim;
             }
+
             document.body.insertAdjacentHTML('afterbegin', `
             <div class="els" style="width:${randDim}px;height:${randDim}px;left:${left}px;top:${top}px;overflow:hidden;">
                 <img src="greencat.png" style="width:100%;height:100%;"/>
@@ -194,7 +242,7 @@ function startGame() {
             }
         }
         
-    }, 500);
+    }, 250);
 }
 
 startGame();
