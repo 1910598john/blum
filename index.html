@@ -58,8 +58,8 @@ let freezeinterv;
 function gameEnded() {
     clearInterval(interv);
     clearInterval(freezetimeInterv);
-    clearInterval(bombinterv);
-    clearInterval(freezeinterv);
+    clearTimeout(bombinterv);
+    clearTimeout(freezeinterv);
     $(".els, .els2, .els3").stop(true, false);
     $(".els, .els2, .els3").remove();
 }
@@ -130,6 +130,7 @@ function freezeEl() {
     let msecs = sec * 1000;
     freezeinterv = setTimeout(() => {
         if (!freezed) {
+            $("body").css("background-image", "linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,0.9)), url('greencat.png')");
             let randDim = Math.random() * 70;
             let top = -100;
             let left = 0;
