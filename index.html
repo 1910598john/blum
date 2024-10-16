@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <style>
 ::selection{
@@ -8,10 +9,11 @@
 }
 body{
   overflow: hidden;
-  background:#000;
-  background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url("https://cbx-prod.b-cdn.net/COLOURBOX57035077.jpg?width=800&height=800&quality=70");
+  background-image: linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,0.9)), url("greencat.png");
   background-position: center;
   background-repeat: no-repeat;
+  background-size: cover;
+  height: 100vh;
 }
 .els {
   position: absolute;
@@ -25,7 +27,7 @@ body{
 </style>
 </head>
 <body>
-<p style="position:absolute;left:50%;top:20px;transform:translateX(-50%);color:yellow;font-size:2em;">SCORE: <span id="score">0</span></p>
+<p style="position:absolute;left:50%;top:20px;transform:translateX(-50%);color:yellow;font-size:1em;">SCORE: <span id="score">0</span></p>
 <script>
 let score = 0;
 let freezed = false;
@@ -38,11 +40,12 @@ function bombEl(){
     let msecs = sec * 1000;
     setTimeout(() => {
         if (!freezed) {
-            let randDim = Math.random() * 100;
+            $("body").css("background-image", "linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,0.9)), url('greencat.png')");
+            let randDim = Math.random() * 70;
             let top = -20;
             let left = 0;
-            if (randDim < 40) {
-                randDim += 50;
+            if (randDim < 50) {
+                randDim += 20;
             }
             left = Math.random() * (window.innerWidth - randDim);
             if (left < randDim) {
@@ -63,6 +66,7 @@ function bombEl(){
             $(".els3").on("touchstart", function(event) { //touchstart
                 event.stopImmediatePropagation();
                 $(this).remove();
+                $("body").css("background-image", "linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,0.9)), url('bombcat.png')");
                 score -= 10;
                 if (score < 0) {
                   score = 0;
@@ -81,11 +85,11 @@ function freezeEl() {
     let msecs = sec * 1000;
     setTimeout(() => {
         if (!freezed) {
-            let randDim = Math.random() * 100;
+            let randDim = Math.random() * 70;
             let top = -20;
             let left = 0;
-            if (randDim < 40) {
-                randDim += 50;
+            if (randDim < 50) {
+                randDim += 20;
             }
             left = Math.random() * (window.innerWidth - randDim);
 			if (left < randDim) {
@@ -104,6 +108,8 @@ function freezeEl() {
             $(".els2").on("touchstart", function(event) { //touchstart
                 event.stopImmediatePropagation();
                 $(this).remove();
+                $("body").css("background-image", "linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,0.9)), url('freezingcat.png')");
+                clearInterval(freezetimeInterv);
                 freezeElements(); // Stop all elements when one is touchstarted
             });
 
@@ -133,6 +139,7 @@ function freezeElements() {
 function unfreezeElements() {
     freezed = false;
     clearInterval(freezetimeInterv);
+    $("body").css("background-image", "linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,0.9)), url('greencat.png')");
     freezeEl();
     bombEl();
     $(".els, .els2, .els3").each(function () {
@@ -149,11 +156,11 @@ function unfreezeElements() {
 function startGame() {
     interv = setInterval(() => {
         if (!freezed) {
-            let randDim = Math.random() * 100;
+            let randDim = Math.random() * 70;
             let top = -20;
             let left = 0;
-            if (randDim < 40) {
-                randDim += 50;
+            if (randDim < 50) {
+                randDim += 20;
             }
 
             left = Math.random() * (window.innerWidth - randDim);
